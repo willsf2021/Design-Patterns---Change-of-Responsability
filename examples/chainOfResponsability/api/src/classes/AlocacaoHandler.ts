@@ -1,4 +1,4 @@
-import { AbstractHandler } from "../interfaces/AbstractHandler";
+import { AbstractHandler } from "./AbstractHandler";
 import { prisma } from "../lib/prisma";
 
 export class AlocacaoHandler extends AbstractHandler {

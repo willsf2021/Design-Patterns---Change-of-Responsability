@@ -1,5 +1,5 @@
 import { error } from "console";
-import { AbstractHandler } from "../interfaces/AbstractHandler";
+import { AbstractHandler } from "./AbstractHandler";
 import { prisma } from "../lib/prisma";
 
 export class ConferenciaHandler extends AbstractHandler {
