@@ -1,3 +1,24 @@
 select {
   cursor: pointer;
 }
+
+#historico-container {
+  max-height: 600px;
+  overflow-y: auto;
+  position: relative;
+}
+
+#title-placeholder {
+  height: 80px;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 24px;
+}
+#title {
+  margin: 0;
+}

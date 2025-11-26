@@ -12,6 +12,9 @@ const DOM = {
 
   // Botão Submit
   buttonSubmitSolicitacao: document.querySelector("#submit-solicitacao"),
+
+  // Lista de solicitações
+  solicitacoesList: document.querySelector("#solicitacoes-list"),
 };
 
 /***********************
@@ -24,6 +27,25 @@ const createOption = (id, nome) => {
   opt.value = id;
   opt.innerHTML = nome;
   return opt;
+};
+
+const createSolicitacaoItem = (solicitacao) => {
+  const container = document.createElement("div");
+  container.classList.add("order-item");
+  container.classList.add("border-bottom");
+  container.classList.add("pb-3");
+  container.classList.add("mb-3");
+  container.innerHTML = `
+        <div class="">
+            <div class="d-flex justify-content-between align-items-start mb-2">
+                <h5 class="mb-0">${solicitacao.produto.nome}</h5>
+                <span class="badge bg-primary">${solicitacao.status}</span>
+            </div>
+            <p class="text-muted mb-1">ID do Pedido: #${solicitacao.id}</p>
+            <p class="text-muted mb-1">Quantidade: ${solicitacao.quantidade} unidade(s)</p>
+            <p class="text-muted mb-0">Data: ${solicitacao.createdAt}</p>
+        </div>`;
+  return container;
 };
 
 /***********************
@@ -41,6 +63,17 @@ const fetchCategorias = async () => {
   }
 };
 
+// Busca categorias
+const fetchSolicitacoes = async () => {
+  try {
+    const response = await fetch("http://localhost:5000/solicitacoes");
+    const data = await response.json();
+    return data.solicitacoes;
+  } catch (error) {
+    console.error(error);
+  }
+};
+
 // Busca produtos por categoria
 const fetchProdutos = async (id) => {
   try {
@@ -52,6 +85,27 @@ const fetchProdutos = async (id) => {
   } catch (error) {
     console.error(error);
   }
+};
+
+/***********************
+ * FILL LIST
+ ************************/
+
+const fillListSolicitacoes = async () => {
+  DOM.voidOptSelectCategoria.innerHTML = "Carregando categorias...";
+
+  const solicitacoes = await fetchSolicitacoes();
+  if (!solicitacoes) {
+    const emptySolicitacoesHTML = "não tem nada";
+    DOM.solicitacoesList.appendChild(emptySolicitacoesHTML);
+    return;
+  }
+
+  solicitacoes.forEach((solicitacao) => {
+    DOM.solicitacoesList.appendChild(createSolicitacaoItem(solicitacao));
+  });
+
+  DOM.voidOptSelectCategoria.innerHTML = "Selecione uma categoria.";
 };
 
 /***********************
@@ -137,6 +191,7 @@ DOM.buttonSubmitSolicitacao.addEventListener("click", () => {
 
 const init = () => {
   fillSelectCategorias();
+  fillListSolicitacoes();
 };
 
 document.addEventListener("DOMContentLoaded", init);

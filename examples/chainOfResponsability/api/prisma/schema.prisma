@@ -24,4 +24,15 @@ model Produto {
   nome String
   categoria_id Int
   categoria Categoria @relation(fields: [categoria_id], references: [id])
+  solicitacoes Solicitacao[]
+}
+
+model Solicitacao {
+  id Int @id @default(autoincrement())
+  quantidade Int
+  produto_id Int
+  produto Produto @relation(fields: [produto_id], references: [id])
+  status String
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
 }
