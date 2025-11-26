@@ -51,8 +51,11 @@ Cada handler pode:
 - ❌ Rejeitar e finalizar a cadeia
 - 📝 Atualizar status no banco de dados
 
+## Fontes de Estudo
+<a href="https://www.geeksforgeeks.org/system-design/chain-of-responsibility-design-pattern-in-java/">Geeks For Geeks - Chain of Responsability</a>
+
 ## MER
-<img src="../mer.png">
+<img src="./examples/chainOfResponsability/mer.png">
 
 ## 🚀 Como Executar
 
