@@ -27,12 +27,12 @@ router.post("/criar", async (req, res) => {
 
     const solicitacao = await prisma.solicitacao.create({
       data: {
-        produto_id: produto_id,
-        quantidade: quantidade,
-        status: "Processando",
+        produto_id: Number(produto_id),
+        quantidade: Number(quantidade),
+        status: "Pendente",
       },
     });
-    
+
     const solicitacao_id = solicitacao.id;
 
     const estoqueHandler = new EstoqueHandler();
@@ -47,7 +47,7 @@ router.post("/criar", async (req, res) => {
     conferenciaHandler.setNext(expedicaoHandler);
 
     const resultado = await estoqueHandler.execute(solicitacao_id);
-    res.json({ resultado });
+    res.json(resultado);
   } catch (error) {
     res.status(500).json({ error: "Erro interno do servidor" });
   }

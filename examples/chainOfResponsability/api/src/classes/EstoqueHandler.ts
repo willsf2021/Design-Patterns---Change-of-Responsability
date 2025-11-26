@@ -3,23 +3,24 @@ import { prisma } from "../lib/prisma";
 
 export class EstoqueHandler extends AbstractHandler {
   async execute(solicitacao_id: number): Promise<any> {
+    let response = {
+      error: false,
+      message: "",
+    };
     try {
-      // Busca a solicitação para pegar produto_id e quantidade
       const solicitacao = await prisma.solicitacao.findUnique({
         where: { id: solicitacao_id },
         include: { produto: true },
       });
 
       if (!solicitacao) {
+        response.message = "Solicitação não encontrada";
+        response.error = true;
         await prisma.solicitacao.update({
           where: { id: solicitacao_id },
-          data: { status: "Solicitação não encontrada" },
+          data: { status: response.message },
         });
-        return {
-          erro: "Solicitação não encontrada",
-          solicitacao_id,
-          handler: "EstoqueHandler",
-        };
+        return response;
       }
 
       // Busca o estoque do produto
@@ -28,15 +29,13 @@ export class EstoqueHandler extends AbstractHandler {
       });
 
       if (!estoque) {
+        response.message = "Produto sem registro de estoque";
+        response.error = true;
         await prisma.solicitacao.update({
           where: { id: solicitacao_id },
-          data: { status: "Produto sem registro de estoque" },
+          data: { status: response.message },
         });
-        return {
-          erro: "Produto sem registro de estoque",
-          solicitacao_id,
-          handler: "EstoqueHandler",
-        };
+        return response;
       }
 
       // Verifica se tem estoque suficiente
@@ -50,29 +49,23 @@ export class EstoqueHandler extends AbstractHandler {
         );
         return this.passToNext(solicitacao_id);
       } else {
+        response.message = "Estoque insuficiente";
+        response.error = true;
         await prisma.solicitacao.update({
           where: { id: solicitacao_id },
-          data: { status: "Estoque insuficiente" },
+          data: { status: response.message },
         });
-        return {
-          erro: "Estoque insuficiente",
-          solicitacao_id,
-          handler: "EstoqueHandler",
-          disponivel: estoque.quantidade,
-          solicitado: solicitacao.quantidade,
-        };
+        return response;
       }
     } catch (error) {
+      response.message = "Erro ao verificar estoque";
+      response.error = true;
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Erro ao verificar estoque" },
+        data: { status: response.message },
       });
-      return {
-        erro: "Falha ao consultar estoque",
-        solicitacao_id,
-        handler: "EstoqueHandler",
-        detalhes: error,
-      };
+
+      return response;
     }
   }
 }

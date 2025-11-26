@@ -4,24 +4,26 @@ import { prisma } from "../lib/prisma";
 export class SeparacaoHandler extends AbstractHandler {
   async execute(solicitacao_id: number): Promise<any> {
     const aprovado = Math.random() > 0.5;
-    
+    let response = {
+      error: false,
+      message: "",
+    };
     if (aprovado) {
+      response.message = "Pronto para retirada pela expedição.";
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Pronto para retirada" }
+        data: { status: response.message },
       });
       console.log(`Produto separado para solicitação ${solicitacao_id}`);
       return this.passToNext(solicitacao_id);
     } else {
+      response.message = "Falha na alocação.";
+      response.error = true;
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Falha na separação" }
+        data: { status: response.message },
       });
-      return { 
-        erro: "Falha na separação", 
-        solicitacao_id,
-        handler: "SeparacaoHandler" 
-      };
+      return response;
     }
   }
 }

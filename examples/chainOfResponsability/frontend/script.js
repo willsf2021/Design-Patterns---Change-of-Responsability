@@ -9,9 +9,10 @@ const DOM = {
   // Select Produtos
   selectProdutos: document.querySelector("#select-produtos"),
   voidOptSelectProduto: document.querySelector("#void-option-produto"),
-
-  // Botão Submit
   buttonSubmitSolicitacao: document.querySelector("#submit-solicitacao"),
+
+  // Input quantidade
+  inputQuantidade: document.querySelector("#input-quantidade"),
 
   // Lista de solicitações
   solicitacoesList: document.querySelector("#solicitacoes-list"),
@@ -39,10 +40,18 @@ const createSolicitacaoItem = (solicitacao) => {
         <div class="">
             <div class="d-flex justify-content-between align-items-start mb-2">
                 <h5 class="mb-0">${solicitacao.produto.nome}</h5>
-                <span class="badge bg-primary">${solicitacao.status}</span>
+                <span class="badge bg-${
+                  solicitacao.status == "Pendente"
+                    ? "warning"
+                    : solicitacao.status == "Expedido, pronto para retirada!"
+                    ? "success"
+                    : "danger"
+                }">${solicitacao.status}</span>
             </div>
             <p class="text-muted mb-1">ID do Pedido: #${solicitacao.id}</p>
-            <p class="text-muted mb-1">Quantidade: ${solicitacao.quantidade} unidade(s)</p>
+            <p class="text-muted mb-1">Quantidade: ${
+              solicitacao.quantidade
+            } unidade(s)</p>
             <p class="text-muted mb-0">Data: ${solicitacao.createdAt}</p>
         </div>`;
   return container;
@@ -93,10 +102,11 @@ const fetchProdutos = async (id) => {
 
 const fillListSolicitacoes = async () => {
   DOM.voidOptSelectCategoria.innerHTML = "Carregando categorias...";
+  DOM.solicitacoesList.innerHTML = "";
 
   const solicitacoes = await fetchSolicitacoes();
   if (!solicitacoes) {
-    const emptySolicitacoesHTML = "não tem nada";
+    const emptySolicitacoesHTML = "";
     DOM.solicitacoesList.appendChild(emptySolicitacoesHTML);
     return;
   }
@@ -139,6 +149,7 @@ const fillSelectProdutos = async (event) => {
   // Exibe select de produtos e botão
   DOM.selectProdutos.classList.remove("d-none");
   DOM.buttonSubmitSolicitacao.classList.remove("d-none");
+  DOM.inputQuantidade.classList.remove("d-none");
 
   // Limpa produtos anteriores (mantém void option)
   [...DOM.selectProdutos.options].forEach((option) => {
@@ -167,6 +178,7 @@ const fillSelectProdutos = async (event) => {
 // Habilita/desabilita botão conforme estado
 const handlerSubmitButton = (idCategoria, idProduto) => {
   DOM.buttonSubmitSolicitacao.disabled = !(idCategoria && idProduto);
+  DOM.inputQuantidade.disabled = !(idCategoria && idProduto);
 };
 
 // Handler compartilhado
@@ -174,17 +186,83 @@ const callHandlerSubmitButton = () =>
   handlerSubmitButton(DOM.selectCategorias.value, DOM.selectProdutos.value);
 
 /***********************
+ * SUBMIT FUNCTION
+ ************************/
+
+const submitSolicitacao = async () => {
+  const formData = {
+    produto_id: DOM.selectProdutos.value,
+    quantidade: DOM.inputQuantidade.value,
+  };
+
+  Swal.fire({
+    title: "Processando...",
+    text: "Sua solicitação está sendo processada",
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading();
+    },
+  });
+
+  try {
+    const response = await fetch("http://localhost:5000/solicitacoes/criar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    const data = await response.json();
+
+    Swal.close();
+
+    if (data.error === true) {
+      Swal.fire({
+        icon: "error",
+        title: "Erro na solicitação",
+        text: data.message,
+        confirmButtonText: "Entendi",
+      });
+      return;
+    }
+
+    Swal.fire({
+      icon: "success",
+      title: "Solicitação realizada!",
+      text: "Seu pedido foi processado com sucesso",
+      confirmButtonText: "OK",
+    });
+    return;
+  } catch (error) {
+    Swal.close();
+    Swal.fire({
+      icon: "error",
+      title: "Erro de conexão",
+      text: "Não foi possível conectar ao servidor",
+      confirmButtonText: "Tentar novamente",
+    });
+  } finally {
+    DOM.selectCategorias.innerHTML = "";
+    DOM.selectProdutos.innerHTML = "";
+    DOM.selectProdutos.classList.add("d-none");
+    DOM.buttonSubmitSolicitacao.classList.add("d-none");
+    DOM.inputQuantidade.classList.add("d-none");
+    init();
+  }
+};
+
+/***********************
  * EVENT LISTENERS
  ************************/
 
-DOM.selectCategorias.addEventListener("change", fillSelectProdutos);
-DOM.selectCategorias.addEventListener("change", callHandlerSubmitButton);
 DOM.selectProdutos.addEventListener("change", callHandlerSubmitButton);
 
-DOM.buttonSubmitSolicitacao.addEventListener("click", () => {
-  // Lógica de Submissão do Formulário
-  alert("Enviando Formulário");
+DOM.selectCategorias.addEventListener("change", (e) => {
+  fillSelectProdutos(e);
+  callHandlerSubmitButton();
 });
+DOM.buttonSubmitSolicitacao.addEventListener("click", submitSolicitacao);
 
 /***********************
  * INIT

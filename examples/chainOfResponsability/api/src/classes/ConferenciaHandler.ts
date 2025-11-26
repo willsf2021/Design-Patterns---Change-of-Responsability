@@ -1,27 +1,30 @@
+import { error } from "console";
 import { AbstractHandler } from "../interfaces/AbstractHandler";
 import { prisma } from "../lib/prisma";
 
 export class ConferenciaHandler extends AbstractHandler {
   async execute(solicitacao_id: number): Promise<any> {
     const aprovado = Math.random() > 0.5;
-
+    let response = {
+      error: false,
+      message: "",
+    };
     if (aprovado) {
+      response.message = "Produto alocado";
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Em conferência" },
+        data: { status: response.message },
       });
       console.log(`Conferência aprovada para solicitação ${solicitacao_id}`);
       return this.passToNext(solicitacao_id);
     } else {
+      response.message = "Produto alocado";
+      response.error = true;
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Falha na conferência" },
+        data: { status: response.message },
       });
-      return {
-        erro: "Falha na conferência",
-        solicitacao_id,
-        handler: "ConferenciaHandler",
-      };
+      return response;
     }
   }
 }

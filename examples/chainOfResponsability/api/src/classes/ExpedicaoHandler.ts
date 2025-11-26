@@ -3,28 +3,25 @@ import { prisma } from "../lib/prisma";
 export class ExpedicaoHandler extends AbstractHandler {
   async execute(solicitacao_id: number): Promise<any> {
     const aprovado = Math.random() > 0.5;
+    let response = {
+      error: false,
+      message: "",
+    };
 
     if (aprovado) {
+      response.message = "Expedido, pronto para retirada!";
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Expedido, pronto para retirada!" },
+        data: { status: response.message },
       });
-      console.log(`Produto expedido, pronto para retirada ${solicitacao_id}`);
-      return {
-        sucesso: "Solicitação concluída",
-        solicitacao_id,
-        status: "Expedido",
-      };
     } else {
+      response.error = true;
+      response.message = "Falha na expedição";
       await prisma.solicitacao.update({
         where: { id: solicitacao_id },
-        data: { status: "Falha na expedição" },
+        data: { status: response.message },
       });
-      return {
-        erro: "Falha na expedição",
-        solicitacao_id,
-        handler: "ExpedicaoHandler",
-      };
     }
+    return response;
   }
 }
