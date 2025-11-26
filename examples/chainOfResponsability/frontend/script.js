@@ -182,6 +182,7 @@ DOM.selectCategorias.addEventListener("change", callHandlerSubmitButton);
 DOM.selectProdutos.addEventListener("change", callHandlerSubmitButton);
 
 DOM.buttonSubmitSolicitacao.addEventListener("click", () => {
+  // Lógica de Submissão do Formulário
   alert("Enviando Formulário");
 });
 
