@@ -16,10 +16,4 @@ router.get("/", async (req, res) => {
   }
 });
 
-// Você pode adicionar mais rotas aqui depois
-router.post("/", async (req, res) => {
-  // Exemplo para futura implementação
-  res.json({ message: "Produto criado" });
-});
-
 export const produtoRoutes = router;

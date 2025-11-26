@@ -2,6 +2,7 @@ import "dotenv/config";
 import express from "express";
 import { cors } from "./middleware/cors";
 import { produtoRoutes } from "./routes/produtos";
+import { categoriasRoutes } from "./routes/categorias";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,10 +17,11 @@ app.get("/hello", (req, res) => {
 });
 
 app.use("/produtos", produtoRoutes);
+app.use("/categorias", categoriasRoutes);
 
 app.use((req, res) => {
-  res.status(404).json({ error: "Rota não encontrada" })
-})
+  res.status(404).json({ error: "Rota não encontrada" });
+});
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
