@@ -1,0 +1,27 @@
+INSERT INTO "Categoria" (id, nome) VALUES
+  (1, 'Informática'),
+  (2, 'Escritório'),
+  (3, 'Manutenção'),
+  (4, 'Limpeza');
+
+INSERT INTO "Produto" (id, nome, categoria_id) VALUES
+  (1, 'Notebook Dell Latitude', 1),
+  (2, 'Mouse USB', 1),
+  (3, 'Teclado Mecânico', 1),
+  (4, 'Cadeira Ergonômica', 2),
+  (5, 'Monitor 24 Polegadas', 1),
+  (6, 'Papel A4 - Resma', 2),
+  (7, 'Álcool Isopropílico', 3),
+  (8, 'Detergente Neutro', 4);
+
+
+INSERT INTO "Estoque" (id, produto_id, quantidade) VALUES
+  (1, 1, 5),     -- Notebook
+  (2, 2, 30),    -- Mouse
+  (3, 3, 0),     -- Teclado (sem estoque proposital)
+  (4, 4, 2),     -- Cadeira
+  (5, 5, 10),    -- Monitor
+  (6, 6, 100),   -- Papel A4
+  (7, 7, 1),     -- Álcool
+  (8, 8, 0);     -- Detergente (sem estoque)
+
