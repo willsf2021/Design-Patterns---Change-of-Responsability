@@ -25,6 +25,7 @@ model Produto {
   categoria_id Int
   categoria Categoria @relation(fields: [categoria_id], references: [id])
   solicitacoes Solicitacao[]
+  Estoque Estoque?
 }
 
 model Solicitacao {
@@ -33,6 +34,15 @@ model Solicitacao {
   produto_id Int
   produto Produto @relation(fields: [produto_id], references: [id])
   status String
+  createdAt    DateTime @default(now()) @db.Timestamptz(6)
+  updatedAt DateTime @default(now()) @db.Timestamptz(6)
+}
+
+model Estoque {
+  id Int @id @default(autoincrement())
+  quantidade Int
+  produto_id Int @unique
+  produto Produto @relation(fields: [produto_id], references: [id])
   createdAt    DateTime @default(now()) @db.Timestamptz(6)
   updatedAt DateTime @default(now()) @db.Timestamptz(6)
 }
