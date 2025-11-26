@@ -1,12 +1,13 @@
-import express, {Request, Response} from "express";
+import express, { Request, Response } from "express";
+import "dotenv/config";
 
 const app = express();
 app.use(express.json());
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 app.get("/hello", (req: Request, res: Response) => {
-  res.json({ message: "API com TypeScript funcionando!"});
+  res.json({ message: "API com TypeScript funcionando!" });
 });
 
 app.listen(PORT, () => {
